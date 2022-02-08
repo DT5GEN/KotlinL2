@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.example.kotlinl2.R
 import com.example.kotlinl2.databinding.FragmentMainBinding
@@ -56,46 +55,59 @@ class MainFragment : Fragment() {
     }
 
     private fun renderData(appState: AppState) {
+
+
         when (appState) {
 
             is AppState.Success -> {
                 val weatherData = appState.weatherData
                 binding.loadingLayout.visibility = View.GONE
                 Snackbar.make(binding.mainView, "Success", Snackbar.LENGTH_LONG).show()
-
                 setData(weatherData)
             }
 
 
             is AppState.Loading -> {
-                binding
-                    .loadingLayout.visibility = View.VISIBLE
+                binding.loadingLayout.visibility = View.VISIBLE
             }
             is AppState.Fail -> {
                 binding.loadingLayout.visibility = View.GONE
-
                 Snackbar.make(binding.mainView, "Error", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Reload") { viewModel.getWeatherFromRemoteSource() }
                     .show()
                 // TODO dorabotat
-
-
             }
 
         }
 
     }
+//
+//    fun randomWeather(appState: AppState) {
+//        val state = listOf(0, 1)
+//        val randomIndex = Random.nextInt(state.size)
+//        val randomElement = state[randomIndex]
+//        if (randomElement == 1) {
+//            successGo()
+//        } else {
+//            failGo()
+//        }
+//
+//    }
 
-    private fun setData(weatherData: Weather) {
 
-        binding.cityName.text = weatherData.city.city
+
+    private fun setData(pogodaData: Weather) {
+
+        binding.cityName.text = pogodaData.city.city
         binding.cityCoordinates.text = String.format(
             getString(R.string.city_coordinates),
-            weatherData.city.lat.toString(),
-            weatherData.city.lon.toString()
+            pogodaData.city.lat.toString(),
+            pogodaData.city.lon.toString()
         )
-        binding.temperatureValue.text = weatherData.temperature.toString()
-        binding.feelsLikeValue.text = weatherData.feelsLike.toString()
+        binding.temperatureValue.text = pogodaData.temperature.toString()
+        binding.feelsLikeValue.text = pogodaData.feelsLike.toString()
+        binding.pressureMm.text = pogodaData.pressure.toString()
+        binding.windSpeed.text = pogodaData.windSpeed.toString()
     }
 
 }

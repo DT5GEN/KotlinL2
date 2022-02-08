@@ -55,6 +55,20 @@
             app:layout_constraintTop_toBottomOf="@+id/temperatureLabel"
             tools:text="+15" />
 
+
+        <TextView
+            android:id="@+id/temperature_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_15_dp"
+            android:textSize="28sp"
+            android:text=" °С"
+            android:paddingBottom="3dp"
+
+            app:layout_constraintStart_toEndOf="@id/temperatureValue"
+            app:layout_constraintBottom_toBottomOf="@id/temperatureValue" />
+
+
         <TextView
             android:id="@+id/feelsLikeLabel"
             android:layout_width="wrap_content"
@@ -76,6 +90,99 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feelsLikeLabel"
             tools:text="-23" />
+
+        <TextView
+            android:id="@+id/feelsLike_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_15_dp"
+            android:textSize="21sp"
+            android:text=" °С"
+            android:paddingBottom="3dp"
+
+            app:layout_constraintStart_toEndOf="@id/feelsLikeValue"
+            app:layout_constraintBottom_toBottomOf="@id/wind_speed" />
+
+
+
+
+
+
+        <TextView
+            android:id="@+id/wind_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_15_dp"
+            android:text="скорость ветра"
+            app:layout_constraintEnd_toStartOf="@id/feelsLikeLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/temperatureValue" />
+
+
+        <TextView
+            android:id="@+id/wind_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_15_dp"
+            android:textSize="@dimen/feels_like_text_size"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/feelsLikeLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/feelsLikeLabel"
+            tools:text="3" />
+
+
+        <TextView
+            android:id="@+id/wind_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_15_dp"
+            android:textSize="18sp"
+            android:text="м/с"
+            android:paddingBottom="3dp"
+            app:layout_constraintEnd_toStartOf="@id/feelsLikeLabel"
+            app:layout_constraintStart_toEndOf="@id/wind_speed"
+            app:layout_constraintBottom_toBottomOf="@id/wind_speed" />
+
+
+
+        <TextView
+            android:id="@+id/pressure_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_15_dp"
+            android:text="давление"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/feelsLikeLabel"
+            app:layout_constraintTop_toBottomOf="@+id/temperatureValue" />
+
+
+        <TextView
+            android:id="@+id/pressure_mm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_15_dp"
+            android:textSize="@dimen/feels_like_text_size"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/pressure_label"
+            app:layout_constraintStart_toStartOf="@id/pressure_label"
+            app:layout_constraintTop_toBottomOf="@+id/feelsLikeLabel"
+            tools:text="740" />
+
+
+        <TextView
+            android:id="@+id/pressure_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_15_dp"
+
+            android:textSize="18sp"
+            android:text="мм"
+            android:paddingBottom="3dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/pressure_mm"
+            app:layout_constraintBottom_toBottomOf="@id/wind_speed" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout

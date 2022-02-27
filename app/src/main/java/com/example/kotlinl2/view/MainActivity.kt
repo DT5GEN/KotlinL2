@@ -15,10 +15,20 @@ class MainActivity : AppCompatActivity() {
         binding = MainActivityBinding.inflate(layoutInflater)
         val view = binding.getRoot()
         setContentView(view)
-        if (savedInstanceState == null) {
+
+
+        savedInstanceState?.let {
+            // TODO
+        } ?: run {
+
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+//        if (savedInstanceState == null) {
+//            supportFragmentManager.beginTransaction()
+//                .replace(R.id.container, MainFragment.newInstance())
+//                .commitNow()
+//        }
     }
 }

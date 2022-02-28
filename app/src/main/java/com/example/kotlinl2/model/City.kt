@@ -1,9 +1,11 @@
 package com.example.kotlinl2.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-data class City(
+@Parcelize
+data class City (
     val city: String,
     val lat: Double,
     val lon: Double
-)
-
+) : Parcelable

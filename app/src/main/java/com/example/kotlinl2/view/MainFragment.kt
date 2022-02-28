@@ -7,107 +7,118 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.lifecycle.get
 import com.example.kotlinl2.R
-import com.example.kotlinl2.databinding.FragmentMainBinding
+import com.google.android.material.snackbar.Snackbar
 import com.example.kotlinl2.model.Weather
+import com.example.kotlinl2.view.details.DetailsFragment
 import com.example.kotlinl2.viewmodel.AppState
 import com.example.kotlinl2.viewmodel.MainViewModel
-import com.google.android.material.snackbar.Snackbar
+import com.example.kotlinl2.databinding.MainFragmentBinding
+
 
 class MainFragment : Fragment() {
 
-    private var fragmentMainBinding: FragmentMainBinding? = null
-    private val binding get() = fragmentMainBinding!! // делаем геттер
+    private var _binding: MainFragmentBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
+
+    private var isDataSetRus: Boolean = true
 
     companion object {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
+    private val adapter = MainFragmentAdapter(object : MainFragmentAdapter.OnItemViewClickListener {
+        override fun onItemViewClick(weather: Weather) {
+            activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    .add(
+                        R.id.container,
+                        DetailsFragment.newInstance(Bundle().apply {
+                            putParcelable(
+                                DetailsFragment.BUNDLE_EXTRA,
+                                weather
+                            )
+                        })
+                    )
+                    .addToBackStack("")
+                    .commitAllowingStateLoss()
+            }
+        }
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        fragmentMainBinding = FragmentMainBinding.inflate(inflater, container, false)
+        _binding = MainFragmentBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        fragmentMainBinding = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.mainFragmentRecyclerView.adapter = adapter
+        binding.mainFragmentFAB.setOnClickListener { changeWeatherDataSet() }
+
+        val observer = Observer<AppState> {
+            renderData(it)
+        }
+
+        viewModel.getLiveData().observe(viewLifecycleOwner, observer)
+        viewModel.getWeatherFromLocalSourceRus()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    private fun changeWeatherDataSet() =
+        if (isDataSetRus) {
+            viewModel.getWeatherFromLocalSourceWorld()
+            binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
+        } else {
+            viewModel.getWeatherFromLocalSourceRus()
+            binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
+        }.also { isDataSetRus = !isDataSetRus }
 
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
-        val observer = Observer<AppState> { renderData(it) }
-//           val observer = object : Observer<Any> {
-//               override fun onChanged(t: Any?) {
-//                   TODO("Not yet implemented")
-//               }
-//           }
-        viewModel.getLiveData().observe(viewLifecycleOwner, observer)
-        viewModel.getWeatherFromRemoteSource()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        adapter.removeListener()
+        _binding = null
     }
 
     private fun renderData(appState: AppState) {
-
-
         when (appState) {
-
             is AppState.Success -> {
                 val weatherData = appState.weatherData
-                binding.loadingLayout.visibility = View.GONE
-                Snackbar.make(binding.mainView, "Success", Snackbar.LENGTH_LONG).show()
-                setData(weatherData)
+                binding.mainFragmentLoadingLayout.visibility = View.GONE
+                adapter.setWeather(appState.weatherData)
             }
-
 
             is AppState.Loading -> {
-                binding.loadingLayout.visibility = View.VISIBLE
+                binding.mainFragmentLoadingLayout.visibility = View.VISIBLE
             }
-            is AppState.Fail -> {
-                binding.loadingLayout.visibility = View.GONE
-                Snackbar.make(binding.mainView, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getWeatherFromRemoteSource() }
-                    .show()
-                // TODO dorabotat
-            }
+            is AppState.Error -> {
+                binding.mainFragmentLoadingLayout.visibility = View.GONE
 
+                binding.mainFragmentRootView.showSnackBar(
+                    getString(R.string.error),
+                    getString(R.string.reload),
+                    {
+                        viewModel.getWeatherFromLocalSourceRus()
+                    }
+                )
+            }
         }
-
-    }
-//
-//    fun randomWeather(appState: AppState) {
-//        val state = listOf(0, 1)
-//        val randomIndex = Random.nextInt(state.size)
-//        val randomElement = state[randomIndex]
-//        if (randomElement == 1) {
-//            successGo()
-//        } else {
-//            failGo()
-//        }
-//
-//    }
-
-
-
-    private fun setData(pogodaData: Weather) {
-
-        binding.cityName.text = pogodaData.city.city
-        binding.cityCoordinates.text = String.format(
-            getString(R.string.city_coordinates),
-            pogodaData.city.lat.toString(),
-            pogodaData.city.lon.toString()
-        )
-        binding.temperatureValue.text = pogodaData.temperature.toString()
-        binding.feelsLikeValue.text = pogodaData.feelsLike.toString()
-        binding.pressureMm.text = pogodaData.pressure.toString()
-        binding.windSpeed.text = pogodaData.windSpeed.toString()
     }
 
+    private fun View.showSnackBar(
+        text: String,
+        actionText: String,
+        action: (View) -> Unit,
+        length: Int = Snackbar.LENGTH_INDEFINITE
+    ) {
+        Snackbar.make(this, text, length).setAction(actionText, action).show()
+    }
 }

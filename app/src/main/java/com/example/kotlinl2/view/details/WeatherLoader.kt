@@ -24,8 +24,7 @@ class WeatherLoader(
 ) {
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun loadWeather() {
-
+    fun loadWeather() =
 
         try {
             val uri = URL("https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}")
@@ -35,17 +34,15 @@ class WeatherLoader(
                 lateinit var urlConnection: HttpsURLConnection
                 try {
 
+                    urlConnection = (uri.openConnection() as HttpsURLConnection).apply {
+                        requestMethod = "GET"
+                        readTimeout = 10000
 
-                    urlConnection = uri.openConnection() as HttpsURLConnection
-                        urlConnection.requestMethod = "GET"
-                        urlConnection.readTimeout = 10000
-
-                    urlConnection.addRequestProperty(
+                        addRequestProperty(
                             "X-Yandex-API-Key",
                             BuildConfig.WEATHER_API_KEY
                         )
-
-
+                    }
 
                     val bufferedReader =
                         BufferedReader(InputStreamReader(urlConnection.inputStream))
@@ -74,17 +71,16 @@ class WeatherLoader(
             listener.onFailed(e)
         }
 
-    }
-}
-
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun getLines(reader: BufferedReader): String {
-        return reader.lines().collect(Collectors.joining("\n"))
-    }
-
 
     interface WeatherLoaderListener {
         fun onLoaded(weatherDTO: WeatherDTO)
         fun onFailed(throwable: Throwable)
     }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.N)
+private fun getLines(reader: BufferedReader): String {
+    return reader.lines().collect(Collectors.joining("\n"))
+}
+

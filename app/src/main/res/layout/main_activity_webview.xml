@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -8,12 +7,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        tools:ignore="MissingConstraints">
+        android:orientation="horizontal">
 
-        <!-- Текст ввода адреса нужной страницы -->
-
-
+        <!-- Текст ввода адреса интересующей нас страницы -->
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/url"
             android:layout_width="wrap_content"
@@ -21,27 +17,20 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textUri"
-            android:text="https://duckduck.go" />
-        <!-- Запрос нужной страницы -->
+            android:text="https://geekbrains.ru/" />
 
+        <!-- Запрос на поиск нужной страницы -->
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/ok"
             android:layout_weight="1"
-            android:text="go"/>
-
-
-
+            android:text="ok" />
     </LinearLayout>
 
-    <!--  Контейнер для загружаемой страницы  -->
-
+    <!-- Контейнер для загружаемой страницы -->
     <WebView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/webview"
-        tools:ignore="WebViewLayout" />
-
-
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

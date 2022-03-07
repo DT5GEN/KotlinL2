@@ -1,20 +1,20 @@
 package com.example.kotlinl2.view
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.get
+import androidx.lifecycle.ViewModelProvider
 import com.example.kotlinl2.R
-import com.google.android.material.snackbar.Snackbar
+import com.example.kotlinl2.databinding.MainFragmentBinding
 import com.example.kotlinl2.model.Weather
+import com.example.kotlinl2.utils.showSnackBar
 import com.example.kotlinl2.view.details.DetailsFragment
 import com.example.kotlinl2.viewmodel.AppState
 import com.example.kotlinl2.viewmodel.MainViewModel
-import com.example.kotlinl2.databinding.MainFragmentBinding
+import com.google.android.material.snackbar.Snackbar
 
 
 class MainFragment : Fragment() {
@@ -111,14 +111,5 @@ class MainFragment : Fragment() {
                 )
             }
         }
-    }
-
-    private fun View.showSnackBar(
-        text: String,
-        actionText: String,
-        action: (View) -> Unit,
-        length: Int = Snackbar.LENGTH_INDEFINITE
-    ) {
-        Snackbar.make(this, text, length).setAction(actionText, action).show()
     }
 }

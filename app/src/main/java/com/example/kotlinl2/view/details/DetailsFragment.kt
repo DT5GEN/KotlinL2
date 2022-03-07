@@ -10,6 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.kotlinl2.BuildConfig
 import com.example.kotlinl2.R
@@ -17,6 +20,8 @@ import com.example.kotlinl2.databinding.FragmentDetailsBinding
 import com.example.kotlinl2.model.FactDTO
 import com.example.kotlinl2.model.Weather
 import com.example.kotlinl2.model.WeatherDTO
+import com.example.kotlinl2.viewmodel.AppState
+import com.example.kotlinl2.viewmodel.DetailsViewModel
 import com.google.gson.Gson
 import okhttp3.*
 import java.io.IOException
@@ -45,6 +50,10 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
     private val binding get() = _binding!!
 
     private lateinit var weatherBundle: Weather
+
+    private val viewModel: DetailsViewModel by lazy {
+        ViewModelProvider(this).get(DetailsViewModel::class.java)
+    }
 
     private val loadResultsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -116,8 +125,11 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
 
         weatherBundle = arguments?.getParcelable<Weather>(BUNDLE_EXTRA) ?: Weather()
 
+        viewModel.detailsLiveData.observe(viewLifecycleOwner, Observer { renderData(it) })
+        viewModel.getWeatherFromRemoteSource(MAIN_LINK + "lat=${weatherBundle.city.lat}&lon=${weatherBundle.city.lon}")
 
-        getWeather()
+
+      //  getWeather()
     }
 
     private fun getWeather() {
@@ -125,6 +137,9 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
         binding.loadingLayout.visibility = View.VISIBLE
 
         val client = OkHttpClient()
+
+
+
         var builder: Request.Builder = Request.Builder()
         builder.header(REQUEST_API_KEY, BuildConfig.WEATHER_API_KEY)
         builder.url(MAIN_LINK + "lat=${weatherBundle.city.lat}&lon=${weatherBundle.city.lon}")
@@ -132,7 +147,6 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
         val request: Request = builder.build()
         val call: Call = client.newCall(request)
         call.enqueue(object : Callback {
-
             val handler: Handler = Handler()
 
             override fun onFailure(call: Call, e: IOException) {
@@ -150,19 +164,15 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
                             )
                         )
                     }
-                }  else {
+                } else {
                     TODO(PROCESS_ERROR)
                 }
             }
         })
+    }
 
-//
-//        context?.let {
-//            it.startService(Intent(it, DetailsService::class.java).apply {
-//                putExtra(LATITUDE_EXTRA,  weatherBundle.city.lat)
-//                putExtra(LONGITUDE_EXTRA, weatherBundle.city.lon)
-//            })
-//        }
+    private fun renderData(appState: AppState){
+
     }
 
     private fun displayWeather(weatherDTO: WeatherDTO) {
@@ -180,8 +190,8 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
             )
 
             weatherCondition.text = weatherDTO.fact?.condition
-            temperatureValue.text = weatherDTO.fact?.temp.toString()
-            feelsLikeValue.text = weatherDTO.fact?.feels_like.toString()
+            temperatureValue.text = weatherDTO.fact?.temp.toString() ?: TODO(PROCESS_ERROR)
+            feelsLikeValue.text = weatherDTO.fact?.feels_like.toString() ?: TODO(PROCESS_ERROR)
         }
     }
 

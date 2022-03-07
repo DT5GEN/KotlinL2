@@ -5,16 +5,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.kotlinl2.BuildConfig
 import com.example.kotlinl2.R
 import com.example.kotlinl2.databinding.FragmentDetailsBinding
 import com.example.kotlinl2.model.FactDTO
 import com.example.kotlinl2.model.Weather
 import com.example.kotlinl2.model.WeatherDTO
+import com.google.gson.Gson
+import okhttp3.*
+import java.io.IOException
 
 const val DETAILS_INTENT_FILTER = "DETAILS INTENT FILTER"
 const val DETAILS_LOAD_RESULT_EXTRA = "LOAD RESULT"
@@ -31,6 +36,9 @@ const val DETAILS_CONDITION_EXTRA = "CONDITION"
 private const val TEMP_INVALID = -100
 private const val FEELS_LIKE_INVALID = -100
 private const val PROCESS_ERROR = "Обработка ошибки"
+private const val MAIN_LINK = "https://api.weather.yandex.ru/v2/forecast?"
+private const val REQUEST_API_KEY = "X-Yandex-API-Key"
+
 
 class DetailsFragment : Fragment(R.layout.main_fragment) {
     private var _binding: FragmentDetailsBinding? = null
@@ -108,11 +116,6 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
 
         weatherBundle = arguments?.getParcelable<Weather>(BUNDLE_EXTRA) ?: Weather()
 
-//        binding.mainView.visibility = View.GONE
-//        binding.loadingLayout.visibility = View.VISIBLE
-
-//        val loader = WeatherLoader(onLoadListener, weatherBundle.city.lat, weatherBundle.city.lon)
-//        loader.loadWeather()
 
         getWeather()
     }
@@ -120,16 +123,50 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
     private fun getWeather() {
         binding.mainView.visibility = View.GONE
         binding.loadingLayout.visibility = View.VISIBLE
-        context?.let {
-            it.startService(Intent(it, DetailsService::class.java).apply {
-                putExtra(LATITUDE_EXTRA,  weatherBundle.city.lat)
-                putExtra(LONGITUDE_EXTRA, weatherBundle.city.lon)
-            })
-        }
+
+        val client = OkHttpClient()
+        var builder: Request.Builder = Request.Builder()
+        builder.header(REQUEST_API_KEY, BuildConfig.WEATHER_API_KEY)
+        builder.url(MAIN_LINK + "lat=${weatherBundle.city.lat}&lon=${weatherBundle.city.lon}")
+
+        val request: Request = builder.build()
+        val call: Call = client.newCall(request)
+        call.enqueue(object : Callback {
+
+            val handler: Handler = Handler()
+
+            override fun onFailure(call: Call, e: IOException) {
+                TODO(PROCESS_ERROR)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val serverResponse: String? = response.body?.string()
+
+                if (response.isSuccessful && serverResponse != null) {
+                    handler.post {
+                        displayWeather(
+                            Gson().fromJson(
+                                serverResponse, WeatherDTO::class.java
+                            )
+                        )
+                    }
+                }  else {
+                    TODO(PROCESS_ERROR)
+                }
+            }
+        })
+
+//
+//        context?.let {
+//            it.startService(Intent(it, DetailsService::class.java).apply {
+//                putExtra(LATITUDE_EXTRA,  weatherBundle.city.lat)
+//                putExtra(LONGITUDE_EXTRA, weatherBundle.city.lon)
+//            })
+//        }
     }
 
     private fun displayWeather(weatherDTO: WeatherDTO) {
-        with (binding) {
+        with(binding) {
             mainView.visibility = View.VISIBLE
             loadingLayout.visibility = View.GONE
 

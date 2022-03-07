@@ -19,8 +19,6 @@ import com.example.kotlinl2.databinding.FragmentThreadsBinding
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-// test del import
-
 const val TEST_BROADCAST_INTENT_FILTER = "TEST BROADCAST INTENT FILTER"
 const val THREADS_FRAGMENT_BROADCAST_EXTRA = "THREADS_FRAGMENT_EXTRA"
 

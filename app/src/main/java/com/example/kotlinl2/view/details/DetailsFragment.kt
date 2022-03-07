@@ -20,6 +20,7 @@ import com.example.kotlinl2.databinding.FragmentDetailsBinding
 import com.example.kotlinl2.model.FactDTO
 import com.example.kotlinl2.model.Weather
 import com.example.kotlinl2.model.WeatherDTO
+import com.example.kotlinl2.utils.showSnackBar
 import com.example.kotlinl2.viewmodel.AppState
 import com.example.kotlinl2.viewmodel.DetailsViewModel
 import com.google.gson.Gson
@@ -126,10 +127,10 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
         weatherBundle = arguments?.getParcelable<Weather>(BUNDLE_EXTRA) ?: Weather()
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner, Observer { renderData(it) })
-        viewModel.getWeatherFromRemoteSource(MAIN_LINK + "lat=${weatherBundle.city.lat}&lon=${weatherBundle.city.lon}")
+        requestWeather()
 
 
-      //  getWeather()
+        //  getWeather()
     }
 
     private fun getWeather() {
@@ -137,7 +138,6 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
         binding.loadingLayout.visibility = View.VISIBLE
 
         val client = OkHttpClient()
-
 
 
         var builder: Request.Builder = Request.Builder()
@@ -171,8 +171,48 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
         })
     }
 
-    private fun renderData(appState: AppState){
+    private fun renderData(appState: AppState) {
+        when (appState) {
+            is AppState.Success -> {
+                binding.mainView.visibility = View.VISIBLE
+                binding.loadingLayout.visibility = View.GONE
+                setWeather(appState.weatherData[0])
+            }
 
+            is AppState.Loading -> {
+                binding.mainView.visibility = View.GONE
+                binding.loadingLayout.visibility = View.VISIBLE
+            }
+            is AppState.Error -> {
+                binding.mainView.visibility = View.VISIBLE
+                binding.loadingLayout.visibility = View.GONE
+
+                binding.mainView.showSnackBar(
+                    getString(R.string.error),
+                    getString(R.string.reload),
+                    {
+                        requestWeather()
+                    }
+                )
+            }
+        }
+    }
+
+    fun requestWeather(){
+        viewModel.getWeatherFromRemoteSource(MAIN_LINK + "lat=${weatherBundle.city.lat}&lon=${weatherBundle.city.lon}")
+    }
+
+    private fun setWeather(weather: Weather) {
+        val city = weatherBundle.city
+        binding.cityName.text = city.city
+        binding.cityCoordinates.text = String.format(
+            getString(R.string.city_coordinates),
+            city.lat.toString(),
+            city.lon.toString()
+        )
+        binding.temperatureValue.text = weather.temperature.toString()
+        binding.feelsLikeValue.text = weather.feelsLike.toString()
+        binding.weatherCondition.text = weather.condition
     }
 
     private fun displayWeather(weatherDTO: WeatherDTO) {

@@ -9,7 +9,6 @@ import com.example.kotlinl2.utils.convertDtoToModel
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -31,8 +30,6 @@ class DetailsViewModel(
         override fun onResponse(call: Call, response: Response) {
             val serverResponse: String? = response.body?.string()
             detailsLiveData.postValue(
-
-
                 if (response.isSuccessful && serverResponse != null) {
                     checkResponse(serverResponse)
                 } else {
@@ -49,15 +46,12 @@ class DetailsViewModel(
                 AppState.Error(Throwable(CORRUPTED_DATA))
             } else {
                 AppState.Success(convertDtoToModel(weatherDTO))
-
             }
         }
-
     }
 
-    fun getWeatherFromRemoteSource(request: String) {
+    fun getWeatherFromRemoteSource(requestLink: String) {
         detailsLiveData.value = AppState.Loading
-        // detailsRepositoryImpl.getWeatherDetailsFromServer(requestLink, )
-
+        detailsRepositoryImpl.getWeatherDetailsFromServer(requestLink, callback)
     }
 }

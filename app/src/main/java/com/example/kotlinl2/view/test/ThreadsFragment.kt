@@ -13,9 +13,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import kotlinx.android.synthetic.main.fragment_threads.*
+
 import com.example.kotlinl2.R
 import com.example.kotlinl2.databinding.FragmentThreadsBinding
+//import kotlinx.android.synthetic.main.fragment_threads.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -72,61 +73,61 @@ class ThreadsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initButtonMainThread()
-        initButtonWorkerThread()
-        initButtonHandlerThread()
+//        initButtonMainThread()
+//        initButtonWorkerThread()
+     //   initButtonHandlerThread()
         initServiceButton()
         initServiceWithBroadcastButton()
     }
 
-    private fun initButtonMainThread() {
-        binding.button.setOnClickListener {
-            binding.textView.text = startCalculations(editText.text.toString().toInt())
-            addView(it.context, getString(R.string.in_main_thread))
-        }
-    }
-
-    private fun initButtonWorkerThread() {
-        binding.calcThreadBtn.setOnClickListener {
-            Thread {
-                counterThread++
-                val calculatedText = startCalculations(editText.text.toString().toInt())
-
-                activity?.runOnUiThread {
-                    binding.textView.text = calculatedText
-                    addView(
-                        it.context,
-                        String.format(getString(R.string.from_thread), counterThread)
-                    )
-                }
-            }.start()
-        }
-    }
-
-    private fun initButtonHandlerThread() {
-        val handlerThread = HandlerThread("My HT")
-        handlerThread.start()
-
-        val handler = Handler(handlerThread.looper)
-
-        binding.calcThreadHandler.setOnClickListener {
-            addView(
-                it.context,
-                String.format(getString(R.string.calculate_in_thread), handlerThread.name)
-            )
-
-            handler.post {
-                startCalculations(binding.editText.text.toString().toInt())
-
-                mainContainer.post {
-                    addView(
-                        it.context,
-                        String.format(getString(R.string.in_thread), Thread.currentThread().name)
-                    )
-                }
-            }
-        }
-    }
+//    private fun initButtonMainThread() {
+//        binding.button.setOnClickListener {
+//            binding.textView.text = startCalculations(editText.text.toString().toInt())
+//            addView(it.context, getString(R.string.in_main_thread))
+//        }
+//    }
+//
+//    private fun initButtonWorkerThread() {
+//        binding.calcThreadBtn.setOnClickListener {
+//            Thread {
+//                counterThread++
+//                val calculatedText = startCalculations(editText.text.toString().toInt())
+//
+//                activity?.runOnUiThread {
+//                    binding.textView.text = calculatedText
+//                    addView(
+//                        it.context,
+//                        String.format(getString(R.string.from_thread), counterThread)
+//                    )
+//                }
+//            }.start()
+//        }
+//    }
+//
+//    private fun initButtonHandlerThread() {
+//        val handlerThread = HandlerThread("My HT")
+//        handlerThread.start()
+//
+//        val handler = Handler(handlerThread.looper)
+//
+//        binding.calcThreadHandler.setOnClickListener {
+//            addView(
+//                it.context,
+//                String.format(getString(R.string.calculate_in_thread), handlerThread.name)
+//            )
+//
+//            handler.post {
+//                startCalculations(binding.editText.text.toString().toInt())
+//
+//                mainContainer.post {
+//                    addView(
+//                        it.context,
+//                        String.format(getString(R.string.in_thread), Thread.currentThread().name)
+//                    )
+//                }
+//            }
+//        }
+//    }
 
     private fun initServiceWithBroadcastButton() {
         binding.serviceWithBroadcastButton.setOnClickListener {

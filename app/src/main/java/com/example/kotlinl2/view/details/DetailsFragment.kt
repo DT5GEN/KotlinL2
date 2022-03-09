@@ -24,6 +24,8 @@ import com.example.kotlinl2.utils.showSnackBar
 import com.example.kotlinl2.viewmodel.AppState
 import com.example.kotlinl2.viewmodel.DetailsViewModel
 import com.google.gson.Gson
+//import com.squareup.picasso.Picasso
+//import kotlinx.android.synthetic.main.fragment_details.*
 import okhttp3.*
 import java.io.IOException
 
@@ -213,6 +215,10 @@ class DetailsFragment : Fragment(R.layout.main_fragment) {
         binding.temperatureValue.text = weather.temperature.toString()
         binding.feelsLikeValue.text = weather.feelsLike.toString()
         binding.weatherCondition.text = weather.condition
+
+//        Picasso.get().load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
+//            .into(headerIcon)
+
     }
 
     private fun displayWeather(weatherDTO: WeatherDTO) {
